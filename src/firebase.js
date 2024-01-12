@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { useCollection } from 'vuefire'
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { setDoc, doc, getDoc,getFirestore, query,collection, orderBy, addDoc }  from 'firebase/firestore';
+import { setDoc, deleteDoc, doc, getDoc,getFirestore, query,collection, orderBy, addDoc }  from 'firebase/firestore';
 import { ref, computed } from 'vue';
 
 
@@ -42,6 +42,9 @@ export async  function saveDoc(c,item){
   }
 }
 
+export async function deleteDoc(c,item){
+  await deleteDoc(doc(db, c, item.id));
+}
 /*
 export const fb = {
   database(){

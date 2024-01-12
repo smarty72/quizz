@@ -22,7 +22,7 @@
             <ion-list-header>Spelers</ion-list-header>
 
             <ion-item button v-for="(user, index) in colUsers" lines="none" :key="index">
-              <ion-icon aria-hidden="true" slot="start" :ios="bookmarkOutline" :md="bookmarkSharp"></ion-icon>
+              <ion-icon aria-hidden="true" slot="start" :ios="bookmarkOutline" :md="bookmarkSharp" @click="deleteDoc('users',user)"></ion-icon>
               <ion-label>{{ user.name }}</ion-label>
               <ion-label slot="end">{{ user.score }}</ion-label>
             </ion-item>
@@ -67,7 +67,7 @@ import {
   warningOutline,
   warningSharp,
 } from 'ionicons/icons';
-import {colQuestions,colUsers, saveDoc, selectedQuestion,authenticated ,isHost } from './firebase.js'
+import {colQuestions,colUsers, saveDoc, selectedQuestion,authenticated, deleteDoc ,isHost } from './firebase.js'
 
 
 

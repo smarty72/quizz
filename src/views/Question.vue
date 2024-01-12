@@ -52,8 +52,9 @@ async function authenticate(){
     message: `Wat is je naam?`,
   });
   if (cancelled) return 
-  user.value = {name:value, score: 0}
-  saveDoc('users',user.value)
+  const res = await saveDoc('users',{name:value, score: 0})
+  console.log(res)
+  user.value = {id: res.id, name:value, score: 0}
   authenticated.value = true
 }
 
