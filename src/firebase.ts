@@ -26,13 +26,17 @@ signInAnonymously(auth)
   });
 export const db = getFirestore(app)
 
+export const colQuizz = useCollection(collection(db, 'quizz'))
 export const colQuestions = useCollection(query(collection(db, 'questions'),orderBy('nr')))
 export const colUsers = useCollection(query(collection(db, 'users'),orderBy('score','desc')))
 export const selectedQuestion =computed(() =>colQuestions.value.filter(q=>q.selected)[0] )
-export const authenticated = ref(false)
+
+export const quizz = ref()
 export const isHost = ref(false)
 export const user = ref()
+export const currentUser =computed(() =>colUsers.value.filter(u=>user.value && u.id == user.value.id)[0]) //track current online user
 
+export const playing = computed(()=>user.value && user.value.playing ? true : false )
 
 export async  function saveDoc(c:string,item:any){
   if (item.id){

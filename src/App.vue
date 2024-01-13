@@ -2,10 +2,10 @@
   <ion-app>
     <ion-split-pane content-id="main-content">
       <ion-menu content-id="main-content" type="overlay" :disabled="!isHost">
-        <ion-content>
+        <ion-content v-if="quizz">
           <ion-list id="inbox-list">
-            <ion-list-header>Quizz</ion-list-header>
-            <ion-note>Created by Noah</ion-note>
+            <ion-list-header>{{quizz.name}}</ion-list-header>
+            <ion-note>{{quizz.description}}</ion-note>
 
             <ion-menu-toggle :auto-hide="false"> </ion-menu-toggle>
               <ion-item button @click="selectQuestion()" lines="none" :detail="true" class="hydrated">
@@ -21,13 +21,12 @@
           <ion-list id="labels-list">
             <ion-list-header>Spelers</ion-list-header>
 
-            <ion-item button v-for="(user, index) in colUsers" lines="none" :key="index">
+            <ion-item button v-for="(user, index) in colUsers" lines="none" :key="index" :color="user.playing ? 'primary': 'none'">
               <ion-icon aria-hidden="true" slot="start" :ios="trashOutline" :md="trashOutline" @click="deleteItem('users',user)"></ion-icon>
               <ion-label>{{ user.name }}</ion-label>
               <ion-label slot="end">{{ user.score }}</ion-label>
             </ion-item>
           </ion-list>
-          <ion-button @click="addUser('Test')">Toevoegen</ion-button>
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -67,7 +66,7 @@ import {
   warningOutline,
   warningSharp,
 } from 'ionicons/icons';
-import {colQuestions,colUsers, saveDoc, selectedQuestion,authenticated, deleteItem ,isHost } from './firebase.js'
+import {colQuestions,colUsers, saveDoc, selectedQuestion, deleteItem ,isHost,quizz} from './firebase.js'
 
 
 
@@ -84,13 +83,6 @@ function selectQuestion(q?:any){
   saveDoc('questions',q)
 }
 
-async function addUser(name:string){
-  saveDoc('users',{
-        name,
-        score: 0,
-        created: new Date()
-      })
-}
 </script>
 
 <style scoped>

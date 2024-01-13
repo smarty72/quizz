@@ -5,20 +5,25 @@
         <ion-buttons slot="start">
           <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
-        <ion-title slot="start" v-if="user">Welkom {{user.name}}</ion-title>
-        <ion-title v-else>Welkom bij mijn quiz</ion-title>
+        <ion-title slot="start" v-if="quizz && user">Welkom {{user.name}} score: {{ user.score }}</ion-title>
+        <ion-title v-else-if="quizz">Welkom bij {{ quizz.name }}</ion-title>
+        <ion-title v-else>Welkom</ion-title>
         <ion-title slot="end" v-if="selectedQuestion">Vraag {{ selectedQuestion.nr }} / {{
           colQuestions.length }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <div id="container" v-if="!authenticated">
-        <ion-button @click="authenticate">Ik doe mee!</ion-button>
-        <ion-button @click="isHost = true">Ik host de quiz</ion-button>
+      {{ currentUser }}
+      <div id="container" v-if="isHost"><h1>U kunt beginnen met de quiz voor {{ colUsers.length }} deelnemers</h1></div>
+      <div id="container" v-else-if="user && !user.playing"><h1>Bedankt voor het spelen {{ user.name }} u hebt verloren met een score van {{ user.score }}</h1></div>
+      <div id="container" v-else-if="!user">
+        <ion-input label="Quiz pin" type="number" v-model.number="nPin" placeholder="Geef de pin van de quiz"></ion-input>
+        <ion-input label="Naam" v-model="tName" placeholder="Wat is je naam?"></ion-input>
+        <ion-button @click="joinQuiz">Ik doe mee!</ion-button>
+        <ion-button @click="hostQuiz">Ik host de quiz</ion-button>
       </div>
-      <div id="container" v-else-if="selectedQuestion">
-        answer : {{ answer }}=>{{ isCorrect }}<br>
+      <div id="container" v-else-if="selectedQuestion && user && user.playing">
         <strong class="capitalize">{{ selectedQuestion.nr }}. {{ selectedQuestion.question }}</strong>
         <p v-if="selectedQuestion.description">{{ selectedQuestion.description }}</p>
         <ion-list>
@@ -37,46 +42,54 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { IonButtons, IonButton, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonRadio, IonRadioGroup } from '@ionic/vue';
-import { colQuestions, colUsers, saveDoc, selectedQuestion, authenticated, isHost, user } from '../firebase.js'
+import { IonButtons,IonInput, IonButton, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonRadio, IonRadioGroup } from '@ionic/vue';
+import { colQuizz, quizz, colQuestions, colUsers, saveDoc, selectedQuestion, playing, isHost, user, currentUser } from '../firebase.js'
 import { Dialog } from '@capacitor/dialog';
-
+const nPin = ref()
+const tName = ref()
 const chars = ['A', 'B', 'C', 'D']
 const answer = ref()
 //.value voor reaktieve variablenen en computed propeprties
-let isCorrect= ref(false)
+const  isCorrect= ref(false)
 
-async function authenticate(){
-  const { value, cancelled } = await Dialog.prompt({
-    title: 'Aanmelden',
-    message: `Wat is je naam?`,
-  });
-  if (cancelled) return 
-  const res = await saveDoc('users',{name:value, score: 0})
-  console.log(res)
-  user.value = {id: res.id, name:value, score: 0}
-  authenticated.value = true
+async function hostQuiz(){ //ask for pin
+  colQuizz.value.filter((q:any)=>q.host==nPin.value).map((q:any)=>quizz.value = q)//Filter quislizt on host pin and set current quiz
+  if (!quizz.value) return alert('Ongeldige pin')
+  isHost.value=true
 }
 
+
+async function joinQuiz(){
+  colQuizz.value.filter((q:any)=>q.pin==nPin.value).map((q:any)=>quizz.value = q) //Filter quislizt on pin and set current quiz
+  if (!quizz.value) return alert('Ongeldige pin')
+  if (!tName.value) return alert('Geef je naam op')
+  const res:any = await saveDoc('users',{name:tName.value, score: 0})
+  user.value = {id: res.id, name:tName.value, score: 0, playing: true}
+}
 watch(answer,(value)=>{//Beantwoorden van de vraag
   if (!selectedQuestion.value) return false
   isCorrect.value = (value == selectedQuestion.value.answer)
 })
 
-watch(selectedQuestion,(value)=>{ //Wijzigen van elke vraag
-  if (isHost.value || !value || !authenticated.value) return false
+watch(selectedQuestion,(value,question)=>{ //Wijzigen van elke vraag
+  if (isHost.value || !playing.value || !question) return false
   if (!isCorrect.value) { //als fout beantwoord
-    authenticated.value = false
-    Dialog.alert({
-      title: 'Stop',
-      message: 'Je ligt eruit',
-    });
+    user.value.playing = false    //signout player
+    saveDoc("users",user.value) //Save state of user
   } else {
-    //saveDoc()
+    user.value.score+=1
+    saveDoc("users",user.value)
   }
   answer.value =null
   isCorrect.value = value
   
+})
+
+watch(currentUser,(value)=>{ //track changes host user delete
+  if (!value) {
+    user.value = null //logout
+    quizz.value = null
+  }
 })
 </script>
 
