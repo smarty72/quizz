@@ -40,7 +40,7 @@
   </ion-page>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, watch } from 'vue';
 import { IonButtons,IonInput, IonButton, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonRadio, IonRadioGroup } from '@ionic/vue';
 import { colQuizz, quizz, colQuestions, colUsers, saveDoc, selectedQuestion, playing, isHost, user, currentUser } from '../firebase.js'
@@ -53,17 +53,17 @@ const answer = ref()
 const  isCorrect= ref(false)
 
 async function hostQuiz(){ //ask for pin
-  colQuizz.value.filter((q:any)=>q.host==nPin.value).map((q:any)=>quizz.value = q)//Filter quislizt on host pin and set current quiz
+  colQuizz.value.filter((q)=>q.host==nPin.value).map((q)=>quizz.value = q)//Filter quislizt on host pin and set current quiz
   if (!quizz.value) return alert('Ongeldige pin')
   isHost.value=true
 }
 
 
 async function joinQuiz(){
-  colQuizz.value.filter((q:any)=>q.pin==nPin.value).map((q:any)=>quizz.value = q) //Filter quislizt on pin and set current quiz
+  colQuizz.value.filter((q)=>q.pin==nPin.value).map((q)=>quizz.value = q) //Filter quislizt on pin and set current quiz
   if (!quizz.value) return alert('Ongeldige pin')
   if (!tName.value) return alert('Geef je naam op')
-  const res:any = await saveDoc('users',{name:tName.value, score: 0})
+  const res = await saveDoc('users',{name:tName.value, score: 0})
   user.value = {id: res.id, name:tName.value, score: 0, playing: true}
 }
 watch(answer,(value)=>{//Beantwoorden van de vraag

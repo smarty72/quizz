@@ -34,7 +34,7 @@
   </ion-app>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import {
   IonApp,
   IonContent,
@@ -71,7 +71,7 @@ import {colQuestions,colUsers, saveDoc, selectedQuestion, deleteItem ,isHost,qui
 
 
 
-function selectQuestion(q?:any){
+function selectQuestion(q){
   //selectedQuestion.value.selected = false
   if (selectedQuestion.value) {
     const item = selectedQuestion.value

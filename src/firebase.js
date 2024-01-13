@@ -38,7 +38,7 @@ export const currentUser =computed(() =>colUsers.value.filter(u=>user.value && u
 
 export const playing = computed(()=>user.value && user.value.playing ? true : false )
 
-export async  function saveDoc(c:string,item:any){
+export async  function saveDoc(c,item){
   if (item.id){
       return await setDoc(doc(collection(db, c), item.id),item)
   }else{
@@ -46,6 +46,6 @@ export async  function saveDoc(c:string,item:any){
   }
 }
 
-export async function deleteItem(c:string,item:any){
+export async function deleteItem(c,item){
   await deleteDoc(doc(db, c, item.id));
 }
