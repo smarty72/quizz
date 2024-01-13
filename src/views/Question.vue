@@ -81,7 +81,7 @@ watch(selectedQuestion,(value,question)=>{ //Wijzigen van elke vraag
     saveDoc("users",user.value)
   }
   answer.value =null
-  isCorrect.value = value
+  isCorrect.value = false
   
 })
 
