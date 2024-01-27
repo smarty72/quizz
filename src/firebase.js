@@ -29,9 +29,12 @@ export const db = getFirestore(app)
 export const colQuizz = useCollection(collection(db, 'quizz'))
 export const colQuestions = useCollection(query(collection(db, 'questions'),orderBy('nr')))
 export const colUsers = useCollection(query(collection(db, 'users'),orderBy('score','desc')))
-export const selectedQuestion =computed(() =>colQuestions.value.filter(q=>q.selected)[0] )
+
+
 
 export const quizz = ref()
+export const questionList = computed(() => quizz.value ? colQuestions.value.filter(q=>q.q == quizz.value.id) : []) //Filter op huidige quizz
+export const selectedQuestion =computed(() =>questionList.value.filter(q=>q.selected)[0] )
 export const isHost = ref(false)
 export const user = ref()
 export const currentUser =computed(() =>colUsers.value.filter(u=>user.value && u.id == user.value.id)[0]) //track current online user

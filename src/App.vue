@@ -11,7 +11,7 @@
               <ion-item button @click="selectQuestion()" lines="none" :detail="true" class="hydrated">
                 <ion-label>Start</ion-label>
               </ion-item>
-              <ion-item  v-for="(p, i) in colQuestions" :key="i" button @click="selectQuestion(p)" lines="none" :detail="false" class="hydrated" :class="{ selected: p.selected }">
+              <ion-item  v-for="(p, i) in questionList" :key="i" button @click="selectQuestion(p)" lines="none" :detail="false" class="hydrated" :class="{ selected: p.selected }">
                 <ion-icon aria-hidden="true" slot="start" :icon="mailOutline"></ion-icon>
                 <ion-label>Vraag {{ p.nr }}</ion-label>
               </ion-item>
@@ -66,7 +66,7 @@ import {
   warningOutline,
   warningSharp,
 } from 'ionicons/icons';
-import {colQuestions,colUsers, saveDoc, selectedQuestion, deleteItem ,isHost,quizz} from './firebase.js'
+import {questionList,colUsers, saveDoc, selectedQuestion, deleteItem ,isHost,quizz} from './firebase.js'
 
 
 
